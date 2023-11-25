@@ -1,0 +1,28 @@
+---
+
+- name: My provisioning playbook
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install packages
+      ansible.builtin.apt:
+        update_cache: yes
+        pkg: "{{ item }}"
+        state: latest
+      loop:
+        - neovim
+        - tmux
+        - tshark
+    
+    - name: Create user for ansible testing
+      ansible.builtin.user:
+        name: ansible
+        state: present
+
+    - name: Set up multiple authorized keys
+      ansible.posix.authorized_key:
+        user: ansible
+        state: present
+        key: '{{ item }}'
+      with_file:
+        - public_keys/ansible
